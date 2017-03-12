@@ -1,12 +1,10 @@
 #!/bin/sh -e
 
 GCC_TARGET="arm-linux-gnueabihf"
-LINARO_RELEASE="15.05"
-GCC_VERSION="4.9-20${LINARO_RELEASE}"
+GCC_VERSION="4.9-2016.02"
 GCC_NAME="gcc-linaro-${GCC_VERSION}-x86_64_${GCC_TARGET}"
 GCC_TARBALL="${GCC_NAME}.tar.xz"
-GCC_URL="https://releases.linaro.org/${LINARO_RELEASE}/components/toolchain/binaries/${GCC_TARGET}/${GCC_TARBALL}"
-
+GCC_URL="https://releases.linaro.org/components/toolchain/binaries/${GCC_VERSION}/${GCC_TARGET}/${GCC_TARBALL}"
 UBOOT_URL="https://github.com/elesar-uk/u-boot.git"
 UBOOT_BRANCH="titanium-v2015.07"
 KERNEL_URL="https://github.com/elesar-uk/ti-linux-kernel.git"
