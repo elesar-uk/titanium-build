@@ -5,18 +5,20 @@ script that downloads the required toolchain and clones the necessary
 repositories, and Makefiles that simplify the build process.
 
 The resulting kernel is intended to be used with the Debian root
-filesystem from [Linux on
-ARM](https://www.eewiki.net/display/linuxonarm/BeagleBoard-X15) at
-eewiki.net, although it should be possible to use a different filesystem
+filesystem from [eewiki Linux on
+ARM](https://www.digikey.com/eewiki/display/linuxonarm/BeagleBoard-X15),
+although it should be possible to use a different filesystem
 instead. The Titanium U-Boot includes the boot script patch from
-eewiki.net so that it is compatible with the instructions for
-BeagleBoard-X15 to make things easier.
+eewiki so that it is compatible with the instructions for BeagleBoard-X15 to
+make things easier.
 
 ## Prerequisites
 
 In order to use this repository you need to be using a 64-bit PC Linux
 distribution (any modern distribution should work) and it needs to have
-*git*, *make* and *gcc* installed. You will need approximately 4.6G of
+*git* and standard build tools such as *make* and *gcc* installed. On a
+Debian-based distribution such as Ubuntu or Mint install the `build-essential`
+package to ensure you have everything. You will need approximately 4.0G of
 free disk space.
 
 ## Installation
@@ -44,13 +46,13 @@ To build the Linux kernel do the following:
     make
 
 When this has finished the *deploy* directory will contain the kernel
-*zImage* file and tar archives containing the modules, DTBs and firmware.
+*zImage* file and tar archives containing the modules and DTBs.
 
 ## Creating a microSD card
 
 Follow the [instructions for the
-BeagleBoard-X15](https://www.eewiki.net/display/linuxonarm/BeagleBoard-X15#BeagleBoard-X15-RootFileSystem)
-at eewiki.net but note the following differences:
+BeagleBoard-X15](https://www.digikey.com/eewiki/display/linuxonarm/BeagleBoard-X15#BeagleBoard-X15-RootFileSystem)
+on eewiki but note the following differences:
 
 * You do not need to copy *MLO* and *u-boot.img* to the card because the
 Titanium board boots from SPI NOR flash, not from the SD card.
@@ -60,6 +62,11 @@ different, but it is printed at the end of the kernel build process, as is
 the value you should set *kernel_version* to in your environment.
 
 ## Updating U-Boot
+
+If you are using a Titanium computer with RISC OS installed and wish
+to start Linux using the *!GoLinux* application, ignore this section and
+instead copy the *u-boot.img* file into the *!GoLinux* application directory,
+setting the file type to *Code*.
 
 The Titanium board boots U-Boot from SPI NOR flash. There is more than one
 way of updating this, but this section describes how to do it from the
@@ -79,11 +86,11 @@ appears, press a key on the terminal to enter the U-Boot command line.
 
         sf probe
         fatload mmc 0 0x82000000 MLO
-        sf erase 0x0 0x10000
-        sf write 0x82000000 0x0 0x10000
+        sf erase 0x0 0x20000
+        sf write 0x82000000 0x0 0x20000
         fatload mmc 0 0x82000000 u-boot.img
-        sf erase 0x40000 0x60000
-        sf write 0x82000000 0x40000 0x60000
+        sf erase 0x40000 0x80000
+        sf write 0x82000000 0x40000 0x80000
 
 5. Power cycle or reset the board (for example by typing `reset` at the
 U-Boot command line) to start the new U-Boot. If you are upgrading from a
@@ -117,19 +124,19 @@ target path is different. In the following examples the environment variable
 `${sdcard}` is the path to the SD card:
 
 * If you are mounting it on the PC build machine this should be set to the
-  path on which the SD card is mounted (for example /media/rootfs).
+  path on which the SD card is mounted (for example */media/rootfs*).
 * If you are updating the root filesystem on the Titanium board directly,
   the variable should be left unset.
 
 To save having to type the kernel version number many times, set the
-following environment variable (the build process prints the value you should
-use at the end)
+following environment variable (the kernel build process prints the value you
+should use at the end)
 
     export kernel_version=4.X.Y-Z
 
-append the image name to load to U-Boot's environment
+Append the image name to be loaded to U-Boot's environment
 
-    sudo sh -c "echo 'uname_r=${kernel_version}' >> ${sdcard}/boot/uEnv.txt"
+    sudo sh -c "echo 'uname_r=${kernel_version}' > ${sdcard}/boot/uEnv.txt"
 
 then proceed to copy the new kernel zImage
 
@@ -140,7 +147,7 @@ extract the new Device Tree Binaries
     sudo mkdir -p ${sdcard}/boot/dtbs/${kernel_version}/
     sudo tar xf ${kernel_version}-dtbs.tar.gz -C ${sdcard}/boot/dtbs/${kernel_version}/
 
-and extract the new Kernel modules
+and extract the new kernel modules
 
     sudo tar xf ${kernel_version}-modules.tar.gz -C ${sdcard}/
 
@@ -149,7 +156,7 @@ shutdown and power cycle the Titanium board to load the newly installed Kernel.
 ## Configuring the Linux kernel
 
 The default kernel configuration is generated by *kernel/Makefile* from
-*omap2plus_defconfig* plus a set of extra config fragments in the
+*multi_v7_defconfig* plus a set of extra config fragments in the
 *ti-linux-kernel/ti_config_fragments* directory - see the Makefile for a
 list. These all come unmodified from the upstream TI kernel, except for
 the file *titanium.cfg* which contains overrides specifically for the
