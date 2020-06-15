@@ -17,9 +17,9 @@ make things easier.
 In order to use this repository you need to be using a 64-bit PC Linux
 distribution (any modern distribution should work) and it needs to have
 *git* and standard build tools such as *make* and *gcc* installed. On a
-Debian-based distribution such as Ubuntu or Mint install the `build-essential`
-package to ensure you have everything. You will need approximately 4.0G of
-free disk space.
+Debian-based distribution such as Ubuntu or Mint install the `build-essential`,
+`flex`, and `bison` packages to ensure you have everything. You will need 
+approximately 4.0G of free disk space.
 
 ## Installation
 
